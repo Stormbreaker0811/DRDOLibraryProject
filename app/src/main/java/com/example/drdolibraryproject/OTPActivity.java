@@ -43,7 +43,13 @@ public class OTPActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otpactivity);
         Intent intent = getIntent();
-        mobile = intent.getStringExtra("Mobile");
+        mAuth = FirebaseAuth.getInstance();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(intent.getStringExtra("Mobile").contains("+91")){
+            mobile = intent.getStringExtra("Mobile");
+        }else{
+            mobile = "+91"+intent.getStringExtra("Mobile");
+        }
         name = intent.getStringExtra("Name");
         password = intent.getStringExtra("Password");
         dob = intent.getStringExtra("DOB");

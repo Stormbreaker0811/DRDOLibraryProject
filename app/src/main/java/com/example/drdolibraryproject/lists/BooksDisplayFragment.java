@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 
 import com.example.drdolibraryproject.R;
+import com.example.drdolibraryproject.adapters.BooksAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +27,7 @@ public class BooksDisplayFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ExpandableListView books_list;
 
     public BooksDisplayFragment() {
         // Required empty public constructor
@@ -55,6 +58,9 @@ public class BooksDisplayFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        View view = getLayoutInflater().inflate(R.layout.fragment_books_display,null);
+        books_list = view.findViewById(R.id.books_list);
+
     }
 
     @Override

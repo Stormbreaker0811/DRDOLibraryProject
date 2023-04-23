@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.drdolibraryproject.dialogs.DatePicker;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,9 +22,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
-public class RegisterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-    private TextInputLayout name,password,confirm,mobile,date_of_birth;
+public class RegisterActivity extends AppCompatActivity {
+    private TextInputLayout name,password,confirm,mobile;
     private EditText username,pass,conf,mob,dob;
     private Button register_btn;
     @Override
@@ -34,8 +35,18 @@ public class RegisterActivity extends AppCompatActivity implements DatePickerDia
         initialiseUI();
         getEditText();
         dob.setOnClickListener(view -> {
-            DatePicker datePicker = new DatePicker();
-            datePicker.show(getSupportFragmentManager(),"DATE_PICK");
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                    dob.setText(i2+"/"+(i1 + 1)+"/"+i);
+                }
+            },year,month,day);
+            datePickerDialog.show();
+
         });
         register_btn.setOnClickListener(view -> {
             if(TextUtils.isEmpty(username.getText()) && TextUtils.isEmpty(pass.getText()) &&
@@ -69,7 +80,6 @@ public class RegisterActivity extends AppCompatActivity implements DatePickerDia
         pass = password.getEditText();
         conf = confirm.getEditText();
         mob = mobile.getEditText();
-        dob = date_of_birth.getEditText();
     }
 
     private void initialiseUI() {
@@ -78,20 +88,6 @@ public class RegisterActivity extends AppCompatActivity implements DatePickerDia
         mobile = findViewById(R.id.mobile_register);
         confirm = findViewById(R.id.confirm_register);
         register_btn = findViewById(R.id.register);
-        date_of_birth = findViewById(R.id.dob_register);
-    }
-
-    @Override
-    public void onDateSet(android.widget.DatePicker datePicker, int i, int i1, int i2) {
-        Calendar mCalendar = Calendar.getInstance();
-        mCalendar.set(Calendar.YEAR, i);
-        mCalendar.set(Calendar.MONTH, i1);
-        mCalendar.set(Calendar.DAY_OF_MONTH, i2);
-        String selectedDate = DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.getTime());
-        try {
-            Date date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(selectedDate);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        dob = findViewById(R.id.date_of_birth);
     }
 }

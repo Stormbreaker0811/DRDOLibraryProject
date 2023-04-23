@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/baseline_person_24"
             android:hint="Username"
-            android:textAlignment="center" />
+            android:textAlignment="viewStart" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -39,18 +39,19 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/baseline_phone_24"
             android:hint="Mobile"
-            android:textAlignment="center" />
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_register"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="40dp"
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dob_register"
+        app:layout_constraintTop_toBottomOf="@+id/date_of_birth"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -58,8 +59,7 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/baseline_vpn_key_24"
             android:hint="Password"
-            android:inputType="textPassword"
-            android:textAlignment="center" />
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -79,7 +79,7 @@
             android:drawableStart="@drawable/baseline_vpn_key_24"
             android:hint="Confirm Password"
             android:inputType="textPassword"
-            android:textAlignment="center" />
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -93,25 +93,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confirm_register" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dob_register"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mobile_register">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/baseline_date_range_24"
-            android:hint="Enter DOB"
-            android:inputType="none"
-            android:textAlignment="center" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <TextView
         android:id="@+id/welcome_text"
         android:layout_width="match_parent"
@@ -122,4 +103,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/date_of_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:inputType="none"
+        android:hint="Date of birth"
+        android:drawableLeft="@drawable/baseline_date_range_24"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mobile_register" />
 </androidx.constraintlayout.widget.ConstraintLayout>

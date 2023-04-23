@@ -1,5 +1,6 @@
 package com.example.drdolibraryproject.lists;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 
 import com.example.drdolibraryproject.R;
 import com.example.drdolibraryproject.adapters.BirthdayAdapter;
+import com.example.drdolibraryproject.databinding.FragmentBirthdayDisplayBinding;
 import com.example.drdolibraryproject.gettersetter.Birthdays;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,9 +45,11 @@ public class BirthdayDisplayFragment extends Fragment {
     private String mParam1;
     private ArrayList<Birthdays> birthdays_list;
     private String mParam2;
+    private FragmentBirthdayDisplayBinding binding;
     private ListView birthday;
     private ProgressBar progressBar;
     private View view;
+    private Context context;
 
     public BirthdayDisplayFragment() {
         // Required empty public constructor
@@ -103,7 +107,7 @@ public class BirthdayDisplayFragment extends Fragment {
                     if(task.isSuccessful()){
                         for(QueryDocumentSnapshot doc : task.getResult()){
                             birthdays_list.add(new Birthdays(doc.getString("Name")));
-                            BirthdayAdapter birthAdap = new BirthdayAdapter(getContext(),birthdays_list);
+                            BirthdayAdapter birthAdap = new BirthdayAdapter(context,birthdays_list);
                             birthday.setAdapter(birthAdap);
                             progressBar.setVisibility(View.INVISIBLE);
                         }
@@ -114,12 +118,19 @@ public class BirthdayDisplayFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_birthday_display, container, false);
-        birthday = view.findViewById(R.id.birthdays_list);
-        progressBar = view.findViewById(R.id.progress_circle);
+        binding = FragmentBirthdayDisplayBinding.inflate(inflater);
+        view = binding.getRoot();
+        birthday = binding.birthdaysList;
+        progressBar = binding.progressCircle;
         // Inflate the layout for this fragment
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 }

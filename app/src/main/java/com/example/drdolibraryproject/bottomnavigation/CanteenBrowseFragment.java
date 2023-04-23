@@ -1,14 +1,27 @@
 package com.example.drdolibraryproject.bottomnavigation;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.drdolibraryproject.R;
+import com.example.drdolibraryproject.adapters.CanteenAdapter;
+import com.example.drdolibraryproject.adapters.CanteenListDataPump;
+import com.example.drdolibraryproject.databinding.FragmentCanteenBrowseBinding;
+import com.google.firestore.v1.Precondition;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +38,12 @@ public class CanteenBrowseFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private FragmentCanteenBrowseBinding binding;
+    private Context context;
+    private ExpandableListView canteen_list;
+    private List<String> title;
+    private HashMap<String , List<String>> details;
+    private ProgressBar canteenListProgress;
     public CanteenBrowseFragment() {
         // Required empty public constructor
     }
@@ -49,18 +67,42 @@ public class CanteenBrowseFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        //Layout has been inflated.....
+        binding = FragmentCanteenBrowseBinding.inflate(inflater);
+        View root = binding.getRoot();
+        canteen_list = binding.canteenList;
+        canteenListProgress = binding.canteenListProgress;
+        details = CanteenListDataPump.getData();
+        title = new ArrayList<>(details.keySet());
+        CanteenAdapter canteenAdapter = new CanteenAdapter(getContext(),title,details);
+        canteenListProgress.setVisibility(View.VISIBLE);
+        canteen_list.setVisibility(View.VISIBLE);
+        canteen_list.setAdapter(canteenAdapter);
+        if(canteen_list.isEnabled()){
+            Toast.makeText(getContext(), "Canteen list initialized", Toast.LENGTH_SHORT).show();
         }
+//        Toast.makeText(getContext(), "Canteen List Initialized..//", Toast.LENGTH_SHORT).show();
+        canteenListProgress.setVisibility(View.INVISIBLE);
+        canteen_list.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int i) {
+                Toast.makeText(getContext(), title.get(i)+" has collapsed.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        canteen_list.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int i) {
+                Toast.makeText(getContext(), title.get(i)+" has expanded.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return root;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_canteen_browse, container, false);
+    public void onAttach(@androidx.annotation.NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 }

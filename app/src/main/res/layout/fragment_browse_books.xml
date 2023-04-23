@@ -45,7 +45,7 @@
         android:id="@+id/search_books"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="40dp"
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,14 +54,15 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="hint" />
+            android:drawableLeft="@drawable/baseline_search_24"
+            android:hint="@android:string/search_go" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/search_btn"
         android:layout_width="120dp"
         android:layout_height="52dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="40dp"
         android:text="@android:string/search_go"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

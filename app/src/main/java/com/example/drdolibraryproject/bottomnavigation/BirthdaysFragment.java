@@ -7,8 +7,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.example.drdolibraryproject.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +28,7 @@ public class BirthdaysFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ProgressBar birthdayProgress;
 
     public BirthdaysFragment() {
         // Required empty public constructor
@@ -55,6 +59,9 @@ public class BirthdaysFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        View view = getLayoutInflater().inflate(R.layout.fragment_birthdays,null);
+
+
     }
 
     @Override

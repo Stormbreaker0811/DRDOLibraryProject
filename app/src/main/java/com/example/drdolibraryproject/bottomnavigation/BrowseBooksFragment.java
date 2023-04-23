@@ -4,25 +4,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.drdolibraryproject.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -79,27 +73,37 @@ public class BrowseBooksFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        view = getLayoutInflater().inflate(R.layout.fragment_browse_books,null);
+        searchBtn = view.findViewById(R.id.search_btn);
+        search = view.findViewById(R.id.search_books);
+        search_categories = view.findViewById(R.id.search_categories);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(getContext(), "In button click..", Toast.LENGTH_SHORT).show();
+                //search_categories.setOnCheckedChangeListener((radioGroup, i) -> {
+                //    i = radioGroup.getCheckedRadioButtonId();
+                //    switch(i){
+                //        case R.id.book_name:
+                //            Toast.makeText(getContext(), "Calling Book Name", Toast.LENGTH_SHORT).show();
+                //            searchByBookName();
+                //            break;
+                //        case R.id.author_name:
+                //            searchByAuthorName();
+                //            break;
+                //        case R.id.category:
+                //            searchByCategory();
+                //            break;
+                //        case R.id.publish_year:
+                //            searchByPublishYear();
+                //            break;
+                //    }
+                //});
                 search_categories.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                        i = search_categories.getCheckedRadioButtonId();
-                        switch(i){
-                            case R.id.book_name:
-                                searchByBookName();
-                                break;
-                            case R.id.author_name:
-                                searchByAuthorName();
-                                break;
-                            case R.id.category:
-                                searchByCategory();
-                                break;
-                            case R.id.publish_year:
-                                searchByPublishYear();
-                                break;
-                        }
+                        int id = search_categories.getCheckedRadioButtonId();
+                        Toast.makeText(getContext(), id+"", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -108,13 +112,16 @@ public class BrowseBooksFragment extends Fragment {
     }
 
     private void searchByBookName() {
+        Toast.makeText(getContext(), "Searching By BookName", Toast.LENGTH_SHORT).show();
         search_string = search.getEditText();
         FirebaseFirestore booksdb = FirebaseFirestore.getInstance();
         booksdb.collection("library_records").whereEqualTo("BookName",search_string.getText().toString()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
-
+                    for(QueryDocumentSnapshot doc : task.getResult()){
+                        Toast.makeText(getContext(), search_string.getText().toString()+" Book Found.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -175,11 +182,6 @@ public class BrowseBooksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_browse_books, container, false);
-        search = view.findViewById(R.id.search_books);
-        search_categories = view.findViewById(R.id.search_categories);
-        searchBtn = view.findViewById(R.id.search_btn);
-        // Inflate the layout for this fragment
-        return view;
+        return inflater.inflate(R.layout.fragment_browse_books, container, false);
     }
 }
