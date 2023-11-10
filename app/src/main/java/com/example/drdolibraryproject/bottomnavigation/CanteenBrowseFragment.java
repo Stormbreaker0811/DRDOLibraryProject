@@ -15,11 +15,14 @@ import com.example.drdolibraryproject.R;
 import com.example.drdolibraryproject.adapters.CanteenAdapter;
 import com.example.drdolibraryproject.adapters.CanteenListDataPump;
 import com.example.drdolibraryproject.databinding.FragmentCanteenBrowseBinding;
+import com.example.drdolibraryproject.gettersetter.Canteens;
 import com.google.firestore.v1.Precondition;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,7 +45,6 @@ public class CanteenBrowseFragment extends Fragment {
     private Context context;
     private ExpandableListView canteen_list;
     private List<String> title;
-    private HashMap<String , List<String>> details;
     private ProgressBar canteenListProgress;
     public CanteenBrowseFragment() {
         // Required empty public constructor
@@ -74,28 +76,26 @@ public class CanteenBrowseFragment extends Fragment {
         View root = binding.getRoot();
         canteen_list = binding.canteenList;
         canteenListProgress = binding.canteenListProgress;
-        details = CanteenListDataPump.getData();
-        title = new ArrayList<>(details.keySet());
-        CanteenAdapter canteenAdapter = new CanteenAdapter(getContext(),title,details);
-        canteenListProgress.setVisibility(View.VISIBLE);
-        canteen_list.setVisibility(View.VISIBLE);
-        canteen_list.setAdapter(canteenAdapter);
-        if(canteen_list.isEnabled()){
-            Toast.makeText(getContext(), "Canteen list initialized", Toast.LENGTH_SHORT).show();
-        }
+        CanteenListDataPump.getData(details -> {
+            title = new ArrayList<>(details.keySet());
+            CanteenAdapter canteenAdapter = new CanteenAdapter(getContext(),title, details);
+            canteenListProgress.setVisibility(View.VISIBLE);
+            canteen_list.setVisibility(View.VISIBLE);
+            canteen_list.setAdapter(canteenAdapter);
 //        Toast.makeText(getContext(), "Canteen List Initialized..//", Toast.LENGTH_SHORT).show();
-        canteenListProgress.setVisibility(View.INVISIBLE);
-        canteen_list.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int i) {
-                Toast.makeText(getContext(), title.get(i)+" has collapsed.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        canteen_list.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int i) {
-                Toast.makeText(getContext(), title.get(i)+" has expanded.", Toast.LENGTH_SHORT).show();
-            }
+            canteenListProgress.setVisibility(View.INVISIBLE);
+            canteen_list.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+                @Override
+                public void onGroupCollapse(int i) {
+                    Toast.makeText(context, title.get(i)+" has collapsed.", Toast.LENGTH_SHORT).show();
+                }
+            });
+            canteen_list.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+                @Override
+                public void onGroupExpand(int i) {
+                    Toast.makeText(context, title.get(i)+" has expanded.", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
         return root;
     }

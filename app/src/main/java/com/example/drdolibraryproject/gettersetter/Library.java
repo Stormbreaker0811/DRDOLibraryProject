@@ -1,6 +1,8 @@
 package com.example.drdolibraryproject.gettersetter;
 
-public class Library {
+import java.io.Serializable;
+
+public class Library implements Serializable {
     private String bookName,authorName,category,publishYear;
     public Library(String bookName,String authorName,String category,String publishYear){
         this.bookName = bookName;

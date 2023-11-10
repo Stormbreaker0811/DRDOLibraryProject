@@ -58,8 +58,8 @@ public class BooksDisplayFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        View view = getLayoutInflater().inflate(R.layout.fragment_books_display,null);
-        books_list = view.findViewById(R.id.books_list);
+/*        View view = getLayoutInflater().inflate(R.layout.fragment_books_display,null);
+        books_list = view.findViewById(R.id.books_list);*/
 
     }
 

@@ -92,29 +92,29 @@ public class CanteenAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
         View convertView = view;
+        String child = (String) getChild(i,i1);
         if(convertView == null){
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.child_canteen_list,viewGroup,false);
         }
         Button download = convertView.findViewById(R.id.download);
         TextView fileName = convertView.findViewById(R.id.download_text);
-        fileName.setText((CharSequence) expandableListDetail.get(canteenMenus.get(i)));
+        fileName.setText(child);
         download.setOnClickListener(view1 -> {
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference("CanteenMenus");
-            StorageReference ref = storageRef.child((CharSequence) expandableListDetail.get(canteenMenus.get(i))+".pdf");
+            Toast.makeText(context, child, Toast.LENGTH_SHORT).show();
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference("/CanteenMenus");
+            StorageReference ref = storageRef.child(child);
             ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    for(String s : Objects.requireNonNull(expandableListDetail.get(canteenMenus.get(i)))) {
-                        CanteenRetrieve canteenRetrieve = new CanteenRetrieve(context, s, ".pdf", DIRECTORY_DOWNLOADS, uri.toString());
-                        canteenRetrieve.downloadFile();
-                        Toast.makeText(context, "Downloading File.. " + s + ".pdf", Toast.LENGTH_SHORT).show();
-                    }
+                    CanteenRetrieve canteenRetrieve = new CanteenRetrieve(context, child, ".pdf", DIRECTORY_DOWNLOADS, uri.toString());
+                    canteenRetrieve.downloadFile();
+                    Toast.makeText(context, "Downloading File.. " + child + ".pdf", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 }
             });
 //            String pdfURI = child.getUri();

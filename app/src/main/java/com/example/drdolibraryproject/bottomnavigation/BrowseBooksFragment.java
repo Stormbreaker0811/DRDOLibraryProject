@@ -1,18 +1,29 @@
 package com.example.drdolibraryproject.bottomnavigation;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.drdolibraryproject.R;
+import com.example.drdolibraryproject.adapters.BooksAdapter;
+import com.example.drdolibraryproject.databinding.FragmentBrowseBooksBinding;
+import com.example.drdolibraryproject.gettersetter.Library;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,8 +45,9 @@ public class BrowseBooksFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private View customView;
+    private FragmentBrowseBooksBinding binding;
     private static final String ARG_PARAM2 = "param2";
-    private View view;
     private TextInputLayout search;
     private EditText search_string;
     private RadioGroup search_categories;
@@ -43,6 +56,11 @@ public class BrowseBooksFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private List<Library> libraryList;
+    private AlertDialog.Builder booksAlert;
+    private Library lib;
+    private RecyclerView booksRecycler;
+    private Context context;
 
     public BrowseBooksFragment() {
         // Required empty public constructor
@@ -73,55 +91,79 @@ public class BrowseBooksFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        view = getLayoutInflater().inflate(R.layout.fragment_browse_books,null);
-        searchBtn = view.findViewById(R.id.search_btn);
-        search = view.findViewById(R.id.search_books);
-        search_categories = view.findViewById(R.id.search_categories);
+        binding = FragmentBrowseBooksBinding.inflate(getLayoutInflater());
+        searchBtn = binding.searchButton;
+        search_categories = binding.searchCategories;
+        search = binding.searchBooks;
+        libraryList = new ArrayList<>();
+        booksAlert = new AlertDialog.Builder(context);
+        customView = getLayoutInflater().inflate(R.layout.books_alert,null);
+        booksAlert.setTitle("Book Details");
+        booksAlert.setView(customView);
+        booksRecycler = customView.findViewById(R.id.recyclerBooks);
+        booksRecycler.setHasFixedSize(true);
+        booksRecycler.setLayoutManager(new LinearLayoutManager(context));
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "In button click..", Toast.LENGTH_SHORT).show();
-                //search_categories.setOnCheckedChangeListener((radioGroup, i) -> {
-                //    i = radioGroup.getCheckedRadioButtonId();
-                //    switch(i){
-                //        case R.id.book_name:
-                //            Toast.makeText(getContext(), "Calling Book Name", Toast.LENGTH_SHORT).show();
-                //            searchByBookName();
-                //            break;
-                //        case R.id.author_name:
-                //            searchByAuthorName();
-                //            break;
-                //        case R.id.category:
-                //            searchByCategory();
-                //            break;
-                //        case R.id.publish_year:
-                //            searchByPublishYear();
-                //            break;
-                //    }
-                //});
-                search_categories.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                        int id = search_categories.getCheckedRadioButtonId();
-                        Toast.makeText(getContext(), id+"", Toast.LENGTH_SHORT).show();
-                    }
+                Toast.makeText(context, "Search Called..//", Toast.LENGTH_SHORT).show();
+                search.addOnEditTextAttachedListener(textInputLayout -> {
+                    search_string = textInputLayout.getEditText();
                 });
+                RadioButton selectedRadio = getSelectedRadioButton();
+                if(selectedRadio != null) {
+                    switch (selectedRadio.getId()) {
+                        case R.id.book_name:
+                            searchByBookName();
+                            break;
+                        case R.id.author_name:
+                            searchByAuthorName();
+                            break;
+                        case R.id.category:
+                            searchByCategory();
+                            break;
+                        case R.id.publish_year:
+                            searchByPublishYear();
+                            break;
+                        default:
+                            Toast.makeText(context, "Please select one of the buttons to search..//", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+                final AlertDialog books = booksAlert.create();
+                if(customView.getParent() != null){
+                    ((ViewGroup)customView.getParent()).removeView(customView);
+                    booksAlert.setView(customView);
+                }
+                books.show();
             }
         });
 
     }
 
     private void searchByBookName() {
-        Toast.makeText(getContext(), "Searching By BookName", Toast.LENGTH_SHORT).show();
-        search_string = search.getEditText();
         FirebaseFirestore booksdb = FirebaseFirestore.getInstance();
         booksdb.collection("library_records").whereEqualTo("BookName",search_string.getText().toString()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
                     for(QueryDocumentSnapshot doc : task.getResult()){
-                        Toast.makeText(getContext(), search_string.getText().toString()+" Book Found.", Toast.LENGTH_SHORT).show();
+                        String bookName = doc.getString("BookName");
+                        String authorName = doc.getString("AuthorName");
+                        String category = doc.getString("Category");
+                        String publishYear = doc.getString("PublishYear");
+                        lib = new Library(bookName,authorName,category,publishYear);
+                        libraryList.add(lib);
                     }
+                    booksRecycler.setAdapter(new BooksAdapter(context,libraryList));
+                    booksAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            libraryList.clear();
+                        }
+                    });
+
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -133,14 +175,29 @@ public class BrowseBooksFragment extends Fragment {
     }
 
     private void searchByCategory() {
-        search_string = search.getEditText();
+        Toast.makeText(context, "Category Called..//", Toast.LENGTH_SHORT).show();
         FirebaseFirestore category = FirebaseFirestore.getInstance();
         category.collection("library_records").whereEqualTo("Category",search_string.getText().toString())
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
-
+                            for(QueryDocumentSnapshot doc : task.getResult()){
+                                String bookName = doc.getString("BookName");
+                                String authorName = doc.getString("AuthorName");
+                                String category = doc.getString("Category");
+                                String publishYear = doc.getString("PublishYear");
+                                lib = new Library(bookName,authorName,category,publishYear);
+                                libraryList.add(lib);
+                            }
+                            booksRecycler.setAdapter(new BooksAdapter(context,libraryList));
+                            booksAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    libraryList.clear();
+                                }
+                            });
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -152,12 +209,27 @@ public class BrowseBooksFragment extends Fragment {
     }
 
     private void searchByAuthorName() {
-        search_string = search.getEditText();
+        Toast.makeText(context, "Author Name Called..//", Toast.LENGTH_SHORT).show();
         FirebaseFirestore author = FirebaseFirestore.getInstance();
         author.collection("library_records").whereEqualTo("AuthorName",search_string.getText().toString())
                 .get().addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+                            String bookName = doc.getString("BookName");
+                            String authorName = doc.getString("AuthorName");
+                            String category = doc.getString("Category");
+                            String publishYear = doc.getString("PublishYear");
+                            lib = new Library(bookName,authorName,category,publishYear);
+                            libraryList.add(lib);
+                        }
+                        booksRecycler.setAdapter(new BooksAdapter(context,libraryList));
+                        booksAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                libraryList.clear();
+                            }
+                        });
                     }
                 }).addOnFailureListener(e -> {
                     search.setError("No books found..//");
@@ -166,22 +238,47 @@ public class BrowseBooksFragment extends Fragment {
     }
 
     private void searchByPublishYear() {
-        search_string = search.getEditText();
+        Toast.makeText(context, "Publish Year Called..//", Toast.LENGTH_SHORT).show();
         FirebaseFirestore publish_year = FirebaseFirestore.getInstance();
         publish_year.collection("library_records")
                 .whereEqualTo("PublishYear",search_string.getText().toString()).get().
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+                            String bookName = doc.getString("BookName");
+                            String authorName = doc.getString("AuthorName");
+                            String category = doc.getString("Category");
+                            String publishYear = doc.getString("PublishYear");
+                            lib = new Library(bookName,authorName,category,publishYear);
+                            libraryList.add(lib);
+                        }
+                        booksRecycler.setAdapter(new BooksAdapter(context,libraryList));
+                        booksAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                libraryList.clear();
+                            }
+                        });
                     }
                 }).addOnFailureListener(e -> {
 
                 });
     }
 
+    private RadioButton getSelectedRadioButton(){
+        int selectedId = search_categories.getCheckedRadioButtonId();
+        return binding.getRoot().findViewById(selectedId);
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_browse_books, container, false);
+        return binding.getRoot();
+    }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 }
