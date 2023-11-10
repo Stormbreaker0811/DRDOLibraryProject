@@ -1,0 +1,24 @@
+//                search_categories.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(RadioGroup radioGroup, int i) {
+//                        int id = radioGroup.getCheckedRadioButtonId();
+//                        Toast.makeText(context, id+"", Toast.LENGTH_SHORT).show();
+//                        switch (id){
+//                            case R.id.book_name:
+//                                searchByBookName();
+//                                break;
+//                            case R.id.author_name:
+//                                searchByAuthorName();
+//                                break;
+//                            case R.id.category:
+//                                searchByCategory();
+//                                break;
+//                            case R.id.publish_year:
+//                                searchByPublishYear();
+//                                break;
+//                            default:
+//                                Toast.makeText(context, "No option selected..", Toast.LENGTH_SHORT).show();
+//                                break;
+//                        }
+//                    }
+//                });
